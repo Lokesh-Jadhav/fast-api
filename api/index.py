@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 import json
 import os
@@ -26,6 +26,6 @@ def home():
     return {"message": "Use /api?name=X&name=Y to get marks."}
 
 @app.get("/api")
-def get_marks(name: list[str] = []):
-    # Return marks for given names (None if not found)
+def get_marks(name: list[str] = Query(...)):
+    # Return marks in the same order as names provided in query
     return {"marks": [student_marks.get(n, None) for n in name]}
