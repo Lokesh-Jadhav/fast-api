@@ -10,6 +10,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["GET"],
     allow_headers=["*"],
 )
@@ -24,7 +25,7 @@ student_marks = {entry["name"]: entry["marks"] for entry in student_data}
 
 @app.get("/")
 def home():
-    return {"message": "Use /api?name=X&name=Y to get marks."}
+    return {"marks": []}
 
 @app.get("/api")
 def get_marks(name: Optional[list[str]] = Query(None)):
