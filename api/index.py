@@ -19,7 +19,6 @@ app.add_middleware(
 
 # Load JSON telemetry data (file is one level up from /api)
 json_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../q-vercel-latency.json"))
-
 with open(json_path, "r") as f:
     telemetry_data = json.load(f)
 
@@ -27,6 +26,14 @@ with open(json_path, "r") as f:
 def home():
     return {"message": "Latency API running"}
 
+# ✅ GET handler for browser convenience
+@app.get("/api/latency")
+def latency_info():
+    return {
+        "message": "This endpoint accepts POST requests with JSON body {\"regions\": [...], \"threshold_ms\": N}"
+    }
+
+# ✅ POST handler for actual computation
 @app.post("/api/latency")
 async def latency(request: Request):
     body = await request.json()
@@ -50,7 +57,7 @@ async def latency(request: Request):
             "breaches": sum(1 for l in latencies if l > threshold_ms)
         }
 
-    # ✅ Explicitly add CORS headers in every response
+    # ✅ Explicit CORS headers
     return JSONResponse(
         content=response,
         headers={
@@ -60,7 +67,7 @@ async def latency(request: Request):
         }
     )
 
-# ✅ Handle preflight requests explicitly
+# ✅ Handle preflight requests
 @app.options("/api/latency")
 async def options_latency():
     return JSONResponse(
